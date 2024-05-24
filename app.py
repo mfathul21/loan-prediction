@@ -9,41 +9,20 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, precision_recall_curve, confusion_matrix
-from imblearn.over_sampling import SMOTE, RandomOverSampler 
-from preprocessing import load_data_train, data_preparation
+from data_preparation import load_raw_data, load_data_train_test
 
 
 marital_status = ['Married', 'Single']
 
 house_status = ['Owned', 'Rented', "Don't own"]
 
-profession_cat = ['Mechanical Engineer', 'Software Developer', 'Technical Writer',
-            'Civil Servant', 'Librarian', 'Economist', 'Flight Attendant', 'Architect',
-            'Designer', 'Physician', 'Financial Analyst', 'Air Traffic Controller',
-            'Politician', 'Police Officer', 'Artist', 'Surveyor', 'Design Engineer',
-            'Chemical Engineer', 'Hotel Manager', 'Dentist', 'Comedian',
-            'Biomedical Engineer', 'Graphic Designer', 'Computer Hardware Engineer',
-            'Petroleum Engineer', 'Secretary', 'Computer Operator',
-            'Chartered Accountant', 'Technician', 'Microbiologist', 'Fashion Designer',
-            'Aviator' 'Psychologist', 'Magistrate', 'Lawyer', 'Firefighter', 'Engineer',
-            'Official', 'Analyst', 'Geologist', 'Drafter', 'Statistician', 'Web_designer',
-            'Consultant', 'Chef', 'Army Officer', 'Surgeon', 'Scientist', 'Civil Engineer',
-            'Industrial Engineer', 'Technology Specialist']
-
-state_cat = ['Madhya Pradesh', 'Maharashtra', 'Kerala', 'Odisha', 'Tamil Nadu', 'Gujarat',
-        'Rajasthan', 'Telangana', 'Bihar', 'Andhra Pradesh', 'West Bengal', 'Haryana',
-        'Puducherry', 'Karnataka', 'Uttar Pradesh', 'Himachal Pradesh', 'Punjab',
-        'Tripura', 'Uttarakhand', 'Jharkhand', 'Mizoram', 'Assam', 'Jammu and Kashmir',
-        'Delhi', 'Chhattisgarh', 'Chandigarh', 'Manipur', 'Sikkim', 'Other']
-
 def main():
     st.title("Loan Prediction Based on Customers Behaviour")
 
-    df = load_data_train()
-    X_train, X_test, y_train, y_test = data_preparation(df)
+    df = load_raw_data()
+    X_train, X_test, y_train, y_test = load_data_train_test()
 
     modelling = st.sidebar.selectbox('Choice Classifier', ['Logistic Regression', 'Decision Tree', 'Random Forest'])
-    oversampling = st.sidebar.selectbox('Oversampling Method', ['RandomOversampling', 'SMOTE'])
     threshold = st.sidebar.slider("Threshold", 0.0, 1.0, value=0.5, step=0.01)
     
     if modelling == 'Logistic Regression':
@@ -53,13 +32,6 @@ def main():
     elif modelling == 'Random Forest':
         model = RandomForestClassifier(random_state=42)
     
-    if oversampling == 'RandomOverSampling':
-        ros = RandomOverSampler(random_state=42)
-        X_train, y_train = ros.fit_resample(X_train, y_train)
-    elif oversampling == 'SMOTE':
-        smote = SMOTE(random_state=42)
-        X_train, y_train = smote.fit_resample(X_train, y_train)
-
     if st.sidebar.button("Train Model"):
         model.fit(X_train, y_train)
         y_test_pred_proba = model.predict_proba(X_test)[:, 1]
