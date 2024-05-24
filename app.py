@@ -7,7 +7,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import RandomizedSearchCV
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, precision_recall_curve, confusion_matrix
 from data_preparation import load_raw_data, load_data_train_test
 
@@ -28,7 +27,7 @@ def main():
     if modelling == 'Logistic Regression':
         model = LogisticRegression(random_state=42)
     elif modelling == 'Decision Tree':
-        model = DecisionTreeClassifier(criterion='entropy', max_features='auto', min_samples_split=10, random_state=42)
+        model = DecisionTreeClassifier(criterion='entropy', max_features='sqrt', min_samples_split=10, random_state=42)
     elif modelling == 'Random Forest':
         model = RandomForestClassifier(random_state=42)
     

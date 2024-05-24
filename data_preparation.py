@@ -1,7 +1,7 @@
 import pandas as pd 
 import numpy as np
 from sklearn.model_selection import train_test_split
-from imblearn.over_sampling import SMOTE
+# from imblearn.over_sampling import SMOTE
 
 profession_categories = {"Mechanical_engineer": "Engineering", "Chemical_engineer": "Engineering",
                         "Design_Engineer": "Engineering", "Biomedical_Engineer": "Engineering",
@@ -86,30 +86,30 @@ def encode_features(df):
     df[cat_col] = df[cat_col].astype(float)
     return df
 
-def data_split(df):
-    X = df.drop(columns=['risk_flag'], axis=1)
-    y = df['risk_flag']
+# def data_split(df):
+#     X = df.drop(columns=['risk_flag'], axis=1)
+#     y = df['risk_flag']
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
  
-    smote = SMOTE(random_state=42)
-    X_train, y_train = smote.fit_resample(X_train, y_train)
+#     smote = SMOTE(random_state=42)
+#     X_train, y_train = smote.fit_resample(X_train, y_train)
 
-    # Export dataframe to csv
-    X_train.to_csv('datasets/X_train.csv', index=False)
-    X_test.to_csv('datasets/X_test.csv', index=False)
-    y_train.to_csv('datasets/y_train.csv', index=False)
-    y_test.to_csv('datasets/y_test.csv', index=False)
-    return X_train, X_test, y_train, y_test
+#     # Export dataframe to csv
+#     X_train.to_csv('datasets/X_train.csv', index=False)
+#     X_test.to_csv('datasets/X_test.csv', index=False)
+#     y_train.to_csv('datasets/y_train.csv', index=False)
+#     y_test.to_csv('datasets/y_test.csv', index=False)
+#     return X_train, X_test, y_train, y_test
 
 
 df = load_raw_data()
 df = data_cleaning(df)
 df = data_transformation(df, profession_categories, state_zone)
 df = encode_features(df)
-X_train, X_test, y_train, y_test = data_split(df)
+# X_train, X_test, y_train, y_test = data_split(df)
 
-print(f'Shape of X_train: {X_train.shape}')
-print(f'Shape of X_test: {X_test.shape}')
-print(f'Shape of y_train: {y_train.shape}')
-print(f'Shape of y_test: {y_test.shape}')
+# print(f'Shape of X_train: {X_train.shape}')
+# print(f'Shape of X_test: {X_test.shape}')
+# print(f'Shape of y_train: {y_train.shape}')
+# print(f'Shape of y_test: {y_test.shape}')
