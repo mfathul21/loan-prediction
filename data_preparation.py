@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 # from imblearn.over_sampling import SMOTE
+from utils import load_raw_data, data_cleaning, data_transformation, encode_features, split_to_export
+
 
 profession_categories = {"Mechanical_engineer": "Engineering", "Chemical_engineer": "Engineering",
                         "Design_Engineer": "Engineering", "Biomedical_Engineer": "Engineering",
@@ -44,72 +46,14 @@ state_zone = {'Rajasthan':'West_Zone', 'Maharashtra':'West_Zone',
             'Mizoram':'North_East_Zone', 'Manipur':'North_East_Zone',
             'Tripura':'North_East_Zone', 'Assam':'North_East_Zone'}
 
-def load_raw_data():
-    df = pd.read_csv('datasets/Training Data.csv', index_col='Id')
-    df.columns = [x.lower() for x in df.columns.to_list()]
-    return df
-
-def load_data_train_test():
-    X_train = pd.read_csv('datasets/X_train.csv') 
-    X_test = pd.read_csv('datasets/X_test.csv')
-    y_train = pd.read_csv('datasets/y_train.csv')
-    y_test = pd.read_csv('datasets/y_test.csv')
-    return X_train, X_test, y_train, y_test
-
-def data_cleaning(df):
-    df.drop(columns=['city'], axis=1, inplace=True)
-    df['state'] = df['state'].replace('Uttar_Pradesh[5]', 'Uttar_Pradesh')
-    return df
-
-def data_transformation(df, profession, state):
-    df['profession'] = df['profession'].map(profession).apply(lambda x: x.replace('_', ' ').title())
-    df['state'] = df['state'].map(state).apply(lambda x: x.replace('_', ' ').title())
-    return df 
-
-def encode_features(df):
-    bins = [0, 2500000, 5000000, 7500000, 10000000]
-    labels = ['low', 'medium', 'high', 'very high']
-    df['income_category'] = pd.cut(df['income'], bins=bins, labels=labels).astype(str)
-    df.drop(columns=['income'], axis=1, inplace=True)
-
-    f_profession = df['profession'].value_counts().to_dict()
-    f_state = df['state'].value_counts().to_dict()
-
-    df.loc[:, 'profession'] = df['profession'].map(f_profession) / len(df)
-    df.loc[:, 'state'] = df['state'].map(f_state) / len(df)
-    df.loc[:, 'married/single'] = df.loc[:, 'married/single'].map({'married':1, 'single':0})
-    df.loc[:, 'car_ownership'] = df.loc[:, 'car_ownership'].map({'yes':1, 'no':0})
-    df.loc[:, 'income_category'] = df.loc[:, 'income_category'].map({'low':0, 'medium':1, 'high':2, 'very high':3}).astype(int)
-
-    df = pd.get_dummies(df, columns=['house_ownership'], drop_first=True)
-    cat_col = df.select_dtypes(['object', 'category']).columns
-    df[cat_col] = df[cat_col].astype(float)
-    return df
-
-# def data_split(df):
-#     X = df.drop(columns=['risk_flag'], axis=1)
-#     y = df['risk_flag']
-
-#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
- 
-#     smote = SMOTE(random_state=42)
-#     X_train, y_train = smote.fit_resample(X_train, y_train)
-
-#     # Export dataframe to csv
-#     X_train.to_csv('datasets/X_train.csv', index=False)
-#     X_test.to_csv('datasets/X_test.csv', index=False)
-#     y_train.to_csv('datasets/y_train.csv', index=False)
-#     y_test.to_csv('datasets/y_test.csv', index=False)
-#     return X_train, X_test, y_train, y_test
-
 
 df = load_raw_data()
 df = data_cleaning(df)
 df = data_transformation(df, profession_categories, state_zone)
 df = encode_features(df)
-# X_train, X_test, y_train, y_test = data_split(df)
+X_train, X_test, y_train, y_test = split_to_export(df)
 
-# print(f'Shape of X_train: {X_train.shape}')
-# print(f'Shape of X_test: {X_test.shape}')
-# print(f'Shape of y_train: {y_train.shape}')
-# print(f'Shape of y_test: {y_test.shape}')
+print(f'Shape of X_train: {X_train.shape}')
+print(f'Shape of X_test: {X_test.shape}')
+print(f'Shape of y_train: {y_train.shape}')
+print(f'Shape of y_test: {y_test.shape}')
