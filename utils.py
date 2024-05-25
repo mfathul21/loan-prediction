@@ -1,15 +1,17 @@
+import streamlit as st
 import pandas as pd 
 import matplotlib.pyplot as plt 
 import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import auc, confusion_matrix, precision_recall_curve, roc_curve
 
-
+@st.cache(persist=True)
 def load_raw_data():
     df = pd.read_csv('datasets/Training Data.csv', index_col='Id')
     df.columns = [x.lower() for x in df.columns.to_list()]
     return df
 
+@st.cache(persist=True)
 def load_data_train_test():
     X_train = pd.read_csv('datasets/X_train.csv') 
     X_test = pd.read_csv('datasets/X_test.csv')
