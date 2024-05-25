@@ -11,14 +11,15 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from data_preparation import load_raw_data, load_data_train_test
 
 
-marital_status = ['Married', 'Single']
-
-house_status = ['Owned', 'Rented', "Don't own"]
-
 def main():
     st.title("Loan Prediction Based on Customers Behaviour")
-
     df = load_raw_data()
+    marital_status = np.vectorize(lambda x: x.title())(df['married/single'].unique())
+    house_status = np.vectorize(lambda x: x.replace('_', ' ').title())(df['house_ownership'].unique())
+    state_cat = np.append(np.vectorize(lambda x: x.replace('_', ' ').title())(df['state'].unique()), "Other")
+    profession_cat = np.append(np.vectorize(lambda x: x.replace('_', ' ').title())(df['profession'].unique()), "Other")
+    
+
     X_train, X_test, y_train, y_test = load_data_train_test()
 
     modelling = st.sidebar.selectbox('Choice Classifier', ['Logistic Regression', 'Decision Tree', 'Random Forest'])
@@ -28,6 +29,8 @@ def main():
         model = LogisticRegression(random_state=42)
     elif modelling == 'Decision Tree':
         model = DecisionTreeClassifier(criterion='entropy', max_features='sqrt', min_samples_split=10, random_state=42)
+        st.sidebar.markdown('Criterion', ['gini', 'entropy'])
+        st.sidebar.select_slider("Min Sample Split")
     elif modelling == 'Random Forest':
         model = RandomForestClassifier(random_state=42)
     
