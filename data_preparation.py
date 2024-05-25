@@ -45,7 +45,7 @@ state_zone = {'Rajasthan':'West_Zone', 'Maharashtra':'West_Zone',
             'Tripura':'North_East_Zone', 'Assam':'North_East_Zone'}
 
 def load_raw_data():
-    df = pd.read_csv(r'datasets\Training Data.csv', index_col='Id')
+    df = pd.read_csv('datasets/Training Data.csv', index_col='Id')
     df.columns = [x.lower() for x in df.columns.to_list()]
     return df
 
