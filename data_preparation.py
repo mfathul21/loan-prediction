@@ -50,10 +50,10 @@ def load_raw_data():
     return df
 
 def load_data_train_test():
-    X_train = pd.read_csv(r'datasets/X_train.csv') 
-    X_test = pd.read_csv(r'datasets/X_test.csv')
-    y_train = pd.read_csv(r'datasets/y_train.csv')
-    y_test = pd.read_csv(r'datasets/y_test.csv')
+    X_train = pd.read_csv('datasets/X_train.csv') 
+    X_test = pd.read_csv('datasets/X_test.csv')
+    y_train = pd.read_csv('datasets/y_train.csv')
+    y_test = pd.read_csv('datasets/y_test.csv')
     return X_train, X_test, y_train, y_test
 
 def data_cleaning(df):
