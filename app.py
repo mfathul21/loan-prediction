@@ -11,7 +11,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from utils import load_raw_data, load_data_train_test, plot_confusion_matrix, plot_precision_recall_curve, plot_roc_curve, results
-
+from utils import data_transformation, encode_features
 
 def main():
     df = load_raw_data()
@@ -99,6 +99,7 @@ def main():
                 age -= 1
 
             car_ownership = 'yes' if cars > 0 else 'no'
+            marital = marital.lower()
             
             submit_button = st.form_submit_button()
 
@@ -106,8 +107,9 @@ def main():
                 df_input = pd.DataFrame({'name':[name], 'age':[age], 'experience':[len_job], 'married/single':[marital], 'car_ownership':[car_ownership], 'profession':[profession],
                                          'state':[state], 'current_job_yrs':[len_current_job], 'current_house_yrs':[len_house],
                                          'income':[salary], 'house_ownership':[house]})
-                
-
+                df_input, f_profession, f_state = data_transformation(df_input, test=True)
+                encode_features(df_input, f_profession, f_state)
+                df_input = pd.get_dummies(df_input, columns=['house_ownership'], drop_first=True)
                 st.write(df_input)
 
     if st.sidebar.checkbox("Show Raw Data", False):
