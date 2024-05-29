@@ -107,8 +107,8 @@ def main():
                 df_input = pd.DataFrame({'name':[name], 'age':[age], 'experience':[len_job], 'married/single':[marital], 'car_ownership':[car_ownership], 'profession':[profession],
                                          'state':[state], 'current_job_yrs':[len_current_job], 'current_house_yrs':[len_house],
                                          'income':[salary], 'house_ownership':[house]})
-                df_input, f_profession, f_state = data_transformation(df_input, test=True)
-                encode_features(df_input, f_profession, f_state)
+                data_transformation(df_input, test=True)
+                encode_features(df_input)
                 df_input = pd.get_dummies(df_input, columns=['house_ownership'], drop_first=True)
                 st.write(df_input)
 
