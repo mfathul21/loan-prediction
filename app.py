@@ -3,12 +3,15 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt 
 import seaborn as sns 
+from joblib import dump
+from datetime import datetime
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-from utils import load_raw_data, load_data_train_test, plot_confusion_matrix, plot_precision_recall_curve, plot_roc_curve
+from utils import load_raw_data, load_data_train_test, plot_confusion_matrix, plot_precision_recall_curve, plot_roc_curve, results
+
 
 def main():
     df = load_raw_data()
@@ -55,7 +58,6 @@ def main():
         metric = st.sidebar.multiselect("Metric Other", ["Confusion Matrix", "Precision Recall Curve", "ROC AUC Curve"])
     
     
-    
     if st.sidebar.button("Train Model"):
         model.fit(X_train, y_train)
         y_test_pred_proba = model.predict_proba(X_test)[:, 1]
@@ -76,13 +78,12 @@ def main():
     state_cat = np.append(np.vectorize(lambda x: x.replace('_', ' ').title())(df['state'].unique()), "Other")
     profession_cat = np.append(np.vectorize(lambda x: x.replace('_', ' ').title())(df['profession'].unique()), "Other")
 
+    df_results = results()
     if st.sidebar.checkbox("Apply Loan", False):
         with st.form('Formulir'):
             name = st.text_input("Name")
             birth_date = st.date_input("Birth Date")
             state = st.selectbox("State", state_cat)
-            if state == "Other":
-                state = st.text_input("Please specify your state")
             marital = st.selectbox("Marital Status", marital_status)
             salary = st.number_input("Salary per Month (in rupees)", 0)
             cars = st.number_input("Number of Cars", 0)
@@ -91,11 +92,23 @@ def main():
             profession = st.selectbox("Profession", profession_cat)
             len_job = st.number_input("Length of Job Experience", 0, 100)
             len_current_job = st.number_input("Length of Current Job Experience", 0, 100)
-            
-            if profession == "Other":
-                profession = st.text_input("Please specify your profession")
+
+            current_date = datetime.now()
+            age = current_date.year - birth_date.year
+            if (current_date.month, current_date.day) < (birth_date.month, birth_date.day):
+                age -= 1
+
+            car_ownership = 'yes' if cars > 0 else 'no'
             
             submit_button = st.form_submit_button()
+
+            if submit_button:
+                df_input = pd.DataFrame({'name':[name], 'age':[age], 'experience':[len_job], 'married/single':[marital], 'car_ownership':[car_ownership], 'profession':[profession],
+                                         'state':[state], 'current_job_yrs':[len_current_job], 'current_house_yrs':[len_house],
+                                         'income':[salary], 'house_ownership':[house]})
+                
+
+                st.write(df_input)
 
     if st.sidebar.checkbox("Show Raw Data", False):
         st.write(f"Shape of data: {df.shape}")
