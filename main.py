@@ -39,7 +39,7 @@ def main():
         
     if app == "Re-Train Model":
         classifier = st.sidebar.selectbox('Choices Classifier', ['Logistic Regression', 'Decision Tree', 'Random Forest'])
-        
+
 
     if eval == "Sure":
         metric = st.sidebar.multiselect("Metric", ["Confusion Matrix", "Precision Recall Curve", "ROC AUC Curve"])
