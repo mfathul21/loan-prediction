@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd 
+import numpy as np
 import matplotlib.pyplot as plt 
 import seaborn as sns
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import auc, confusion_matrix, precision_recall_curve, roc_curve
 
@@ -79,15 +81,15 @@ def data_cleaning(df):
 def data_transformation(df, profession=profession_categories, state=state_zone, test=False):
     if test:
         profession = {key.replace('_', ' ').title(): value for key, value in profession.items()}
-        state_ = {key.replace('_', ' ').title(): value for key, value in state.items()}
+        state = {key.replace('_', ' ').title(): value for key, value in state.items()}
 
     df['profession'] = df['profession'].map(profession).apply(lambda x: x.replace('_', ' ').title())
-    df['state'] = df['state'].map(state_).apply(lambda x: x.replace('_', ' ').title())
+    df['state'] = df['state'].map(state).apply(lambda x: x.replace('_', ' ').title())
 
     return df
 
 def encode_features(df, fp=f_profession, fs=f_state, lf=len_df):
-    bins = [0, 2500000, 5000000, 7500000, 1000000000]
+    bins = [0, 2500000, 5000000, 7500000, 10000000]
     labels = ['low', 'medium', 'high', 'very high']
     df['income_category'] = pd.cut(df['income'], bins=bins, labels=labels).astype(str)
     df.drop(columns=['income'], axis=1, inplace=True)
@@ -97,8 +99,8 @@ def encode_features(df, fp=f_profession, fs=f_state, lf=len_df):
     df.loc[:, 'married/single'] = df.loc[:, 'married/single'].map({'married':1, 'single':0})
     df.loc[:, 'car_ownership'] = df.loc[:, 'car_ownership'].map({'yes':1, 'no':0})
     df.loc[:, 'income_category'] = df.loc[:, 'income_category'].map({'low':0, 'medium':1, 'high':2, 'very high':3}).astype(int)
-    df['house_ownership_owned'] = df['house_ownership'].apply(lambda x: 1 if x == 'owned' else 0)
-    df['house_ownership_rent'] = df['house_ownership'].apply(lambda x: 1 if x == 'rented' else 0)
+    df['house_ownership_owned'] = df['house_ownership'].apply(lambda x: int(1) if x == 'owned' else int(0))
+    df['house_ownership_rented'] = df['house_ownership'].apply(lambda x: int(1) if x == 'rented' else int(0))
 
     df.drop(columns=['house_ownership'], inplace=True)
     cat_col = ['married/single', 'car_ownership', 'profession', 'state', 'income_category']
