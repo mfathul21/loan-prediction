@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt 
 import seaborn as sns 
+import pickle
 from joblib import dump, load
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
@@ -34,7 +35,9 @@ def main():
     app = st.sidebar.selectbox("Appplication Model", ["Existing Model", "Re-Train Model"])
     
     if app == "Existing Model":
-        model = load('best_model.joblib')
+        # model = load('best_model.joblib')
+        with open('best_model.pkl', 'rb') as f:
+            model = pickle.load(f)
         eval = st.sidebar.selectbox("Show Evaluation Model", ["None", "Sure"])
         
     if app == "Re-Train Model":
