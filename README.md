@@ -1,3 +1,3 @@
 # Loan Prediction Based on Cusmtomers Behaviour
 
-Deploy (BETA): https://loan-prediction-mmzfpfmbiwdlsp7sqedxzn.streamlit.app/
+Deploy (Streamlit): https://loan-prediction-based-on-behaviour.streamlit.app/
