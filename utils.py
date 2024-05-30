@@ -79,16 +79,15 @@ def data_cleaning(df):
 def data_transformation(df, profession=profession_categories, state=state_zone, test=False):
     if test:
         profession = {key.replace('_', ' ').title(): value for key, value in profession.items()}
-        state = {key.replace('_', ' ').title(): value for key, value in state.items()}
+        state_ = {key.replace('_', ' ').title(): value for key, value in state.items()}
 
     df['profession'] = df['profession'].map(profession).apply(lambda x: x.replace('_', ' ').title())
-    df['state'] = df['state'].map(state).apply(lambda x: x.replace('_', ' ').title())
+    df['state'] = df['state'].map(state_).apply(lambda x: x.replace('_', ' ').title())
 
     return df
 
-
 def encode_features(df, fp=f_profession, fs=f_state, lf=len_df):
-    bins = [0, 2500000, 5000000, 7500000, 10000000]
+    bins = [0, 2500000, 5000000, 7500000, 1000000000]
     labels = ['low', 'medium', 'high', 'very high']
     df['income_category'] = pd.cut(df['income'], bins=bins, labels=labels).astype(str)
     df.drop(columns=['income'], axis=1, inplace=True)
@@ -98,10 +97,17 @@ def encode_features(df, fp=f_profession, fs=f_state, lf=len_df):
     df.loc[:, 'married/single'] = df.loc[:, 'married/single'].map({'married':1, 'single':0})
     df.loc[:, 'car_ownership'] = df.loc[:, 'car_ownership'].map({'yes':1, 'no':0})
     df.loc[:, 'income_category'] = df.loc[:, 'income_category'].map({'low':0, 'medium':1, 'high':2, 'very high':3}).astype(int)
+    df['house_ownership_owned'] = df['house_ownership'].apply(lambda x: 1 if x == 'owned' else 0)
+    df['house_ownership_rent'] = df['house_ownership'].apply(lambda x: 1 if x == 'rented' else 0)
 
-    df = pd.get_dummies(df, columns=['house_ownership'], drop_first=True)
+    df.drop(columns=['house_ownership'], inplace=True)
     cat_col = ['married/single', 'car_ownership', 'profession', 'state', 'income_category']
     df[cat_col] = df[cat_col].astype(float)
+    return df
+
+def transformation_data_input(df):
+    data_transformation(df, test=True)
+    encode_features(df)
     return df
 
 def split_to_export(df):
@@ -156,8 +162,19 @@ def plot_roc_curve(y_test, y_test_pred_proba):
 
     return fig
 
-def results():
-    df = pd.DataFrame(columns=['name', 'age', 'state', 'married/single', 'income',
-                                'car_ownership', 'house_ownership', 'current_house_yrs',
-                                'profession', 'experience', 'current_job_yrs'])
-    return df
+
+def metrics_show(metrics_list, y_test, y_test_pred_proba, y_test_pred):
+    if "Confusion Matrix" in metrics_list:
+        st.subheader("Confusion Matrix")
+        fig = plot_confusion_matrix(y_test, y_test_pred)
+        st.pyplot(fig)
+
+    if "Precision Recall Curve" in metrics_list:
+        st.subheader("Precision Recall Curve")
+        fig = plot_precision_recall_curve(y_test, y_test_pred_proba)
+        st.pyplot(fig)
+
+    if "ROC AUC Curve" in metrics_list:
+        st.subheader("ROC AUC Curve")
+        fig = plot_roc_curve(y_test, y_test_pred_proba)
+        st.pyplot(fig)
